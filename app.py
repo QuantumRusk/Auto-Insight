@@ -17,6 +17,22 @@ API_KEY = os.getenv("GEMINI_API_KEY")
 
 st.set_page_config(page_title="AutoInsight", page_icon="📊", layout="wide")
 
+def get_plotly_template() -> str:
+    """Auto-detect Streamlit theme and return matching Plotly template."""
+    try:
+        if hasattr(st, "context") and st.context.theme:
+            return "plotly_dark" if st.context.theme.get("base") == "dark" else "plotly_white"
+    except Exception:
+        pass
+    try:
+        if st.get_option("theme.base") == "dark":
+            return "plotly_dark"
+    except Exception:
+        pass
+    return "plotly_white"
+
+PLOTLY_TEMPLATE = get_plotly_template()
+
 # Initialize Gemini client (new google-genai SDK)
 client = None
 if API_KEY:
@@ -151,6 +167,18 @@ A 2-sentence synthesis of the dataset's primary narrative and structural integri
 
 Generate the analysis now."""
 
+@st.cache_data(show_spinner="🔍 Extracting dataset metadata...")
+def get_metadata(df: pd.DataFrame) -> dict:
+    return extract_metadata(df)
+
+@st.cache_data(show_spinner="🧠 Generating executive summary...")
+def generate_summary_text(prompt: str) -> str:
+    response = client.models.generate_content(
+        model="gemini-3.6-flash",
+        contents=prompt,
+        config=types.GenerateContentConfig(temperature=0.2, max_output_tokens=2048)
+    )
+    return response.text
 
 # ── UI ────────────────────────────────────────────────────────────
 st.title("📊 AutoInsight")
@@ -204,14 +232,14 @@ if uploaded_file is not None:
                 fig_hist = px.histogram(
                     df, x=sel_num, marginal="box",
                     title=f"Distribution of {sel_num}",
-                    template="plotly_white"
+                    template=PLOTLY_TEMPLATE
                 )
                 st.plotly_chart(fig_hist, use_container_width=True)
             with c2:
                 fig_box = px.box(
                     df, y=sel_num,
                     title=f"Box Plot of {sel_num}",
-                    template="plotly_white"
+                    template=PLOTLY_TEMPLATE
                 )
                 st.plotly_chart(fig_box, use_container_width=True)
 
@@ -223,7 +251,7 @@ if uploaded_file is not None:
             fig_bar = px.bar(
                 vc, x=sel_cat, y="count",
                 title=f"Top Categories in {sel_cat}",
-                template="plotly_white"
+                template=PLOTLY_TEMPLATE
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
@@ -242,7 +270,7 @@ if uploaded_file is not None:
                 color_continuous_scale="RdBu_r",
                 zmin=-1, zmax=1,
                 title="Pairwise Pearson Correlation Heatmap",
-                template="plotly_white"
+                template=PLOTLY_TEMPLATE
             )
             fig_corr.update_layout(height=max(400, len(corr.columns) * 40))
             st.plotly_chart(fig_corr, use_container_width=True)
@@ -250,6 +278,7 @@ if uploaded_file is not None:
             st.info("Need at least 2 numeric columns to render a correlation heatmap.")
 
     # ── TAB 4: EXECUTIVE SUMMARY (LLM) ──────────────────────────
+        # ── TAB 4: EXECUTIVE SUMMARY (LLM) ──────────────────────────
     with tab_exec:
         if client is None:
             st.error("🔑 Gemini API key is missing. Add `GEMINI_API_KEY` to your `.env` file and restart.")
@@ -257,22 +286,23 @@ if uploaded_file is not None:
             if st.button("🚀 Generate Executive Summary", type="primary", use_container_width=True):
                 with st.spinner("Principal Data Analyst is reviewing your dataset..."):
                     try:
-                        metadata = extract_metadata(df)
+                        metadata = get_metadata(df)
                         meta_json = json.dumps(metadata, indent=2, default=str)
                         prompt = build_llm_prompt(meta_json)
+                        summary_text = generate_summary_text(prompt)
 
-                        response = client.models.generate_content(
-                            model="gemini-3.6-flash",
-                            contents=prompt,
-                            config=types.GenerateContentConfig(
-                                temperature=0.2,
-                                max_output_tokens=2048
+                        st.markdown("---")
+                        st.markdown(summary_text)
+                        st.markdown("---")
+
+                        col_dl, _ = st.columns([1, 3])
+                        with col_dl:
+                            st.download_button(
+                                label="📥 Download Summary (.md)",
+                                data=summary_text,
+                                file_name="executive_summary.md",
+                                mime="text/markdown"
                             )
-                        )
-
-                        st.markdown("---")
-                        st.markdown(response.text)
-                        st.markdown("---")
 
                         with st.expander("🔍 View raw metadata sent to LLM"):
                             st.json(metadata)
