@@ -218,7 +218,20 @@ st.caption("Upload any CSV. Get instant metrics, interactive visualizations, and
 
 uploaded_file = st.file_uploader("📁 Drop your CSV file here", type=["csv"])
 
-if uploaded_file is not None:
+file_signature = (uploaded_file.name, uploaded_file.size) if uploaded_file is not None else None
+if st.session_state.get("analysis_file_signature") != file_signature:
+    st.session_state.analysis_file_signature = None
+
+generate_analysis = st.button(
+    "Generate Analysis",
+    type="primary",
+    use_container_width=True,
+    disabled=uploaded_file is None,
+)
+if generate_analysis and file_signature is not None:
+    st.session_state.analysis_file_signature = file_signature
+
+if uploaded_file is not None and st.session_state.get("analysis_file_signature") == file_signature:
     try:
         df = pd.read_csv(uploaded_file)
     except Exception as e:
