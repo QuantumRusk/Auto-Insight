@@ -40,6 +40,15 @@ st.markdown(
             font-style: normal;
             font-weight: 400;
         }
+
+        .app-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 999;
+        }
     </style>
     """,
     unsafe_allow_html=True,
@@ -392,3 +401,5 @@ if uploaded_file is not None and st.session_state.get("analysis_file_signature")
                         st.error(f"LLM generation failed: {e}")
             else:
                 st.info("Click the button above to generate the AI-powered executive summary.")
+
+st.markdown('<div class="app-footer">© 2026 Anumeh Patil. All rights reserved.</div>', unsafe_allow_html=True)
