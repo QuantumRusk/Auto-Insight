@@ -21,11 +21,7 @@ AutoInsight is a single-file Streamlit app that turns any CSV into an interactiv
 
 ## Setup
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/auto-insight.git
-   cd auto-insight
-   ```
+1. Clone the repository into your device.
 
 2. Install dependencies:
    ```bash
@@ -49,7 +45,7 @@ AutoInsight is a single-file Streamlit app that turns any CSV into an interactiv
 
 ## Live Demo
 
-[Click here to try AutoInsight live]()
+[Click here to try AutoInsight live](https://auto-insight69.streamlit.app/)
 
 ## Project Structure
 
