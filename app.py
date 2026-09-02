@@ -24,6 +24,134 @@ API_KEY = os.getenv("GEMINI_API_KEY")
 
 st.set_page_config(page_title="AutoInsight", page_icon="📊", layout="wide")
 
+
+# # ── DESIGN SYSTEM (presentation only — no logic) ───────────────────
+# INK = "#2A0A22"        # deep plum
+# INK_SOFT = "#5B3450"   # muted plum
+# PAPER = "#F2EEF3"      # ivory
+# LINE = "#2A0A22"
+# ACCENT = "#8C1D3F"     # rich crimson
+
+# st.markdown(
+#     f"""
+#     <style>
+#       html, body, [class*="css"], .stApp {{
+#         font-family: "Times New Roman", Times, Georgia, serif !important;
+#         background-color: {PAPER};
+#         color: {INK};
+#       }}
+#       .stApp * {{ border-radius: 0 !important; }}
+
+#       h1, h2, h3, h4, h5, h6 {{
+#         font-family: "Times New Roman", Times, serif !important;
+#         color: {INK} !important;
+#         letter-spacing: -0.5px;
+#         font-weight: 700;
+#       }}
+#       h1 {{ font-size: 3.4rem !important; line-height: 1.05; }}
+#       h2, .stTabs h2 {{ font-size: 1.9rem !important; }}
+
+#       .ai-masthead {{
+#         border-top: 3px solid {LINE};
+#         border-bottom: 1px solid {LINE};
+#         padding: 1.6rem 0 1.4rem 0;
+#         margin-bottom: 1.8rem;
+#       }}
+#       .ai-kicker {{
+#         font-size: 0.95rem;
+#         letter-spacing: 0.28em;
+#         text-transform: uppercase;
+#         color: {ACCENT};
+#         margin-bottom: 0.6rem;
+#       }}
+#       .ai-title {{ font-size: 3.6rem; font-weight: 700; margin: 0; }}
+#       .ai-sub {{ font-size: 1.15rem; color: {INK_SOFT}; margin-top: 0.6rem; font-style: italic; }}
+
+#       /* Metric cards */
+#       [data-testid="stMetric"] {{
+#         background: #FFFFFF;
+#         border: 1px solid {LINE};
+#         border-left: 6px solid {ACCENT};
+#         padding: 1rem 1.1rem;
+#       }}
+#       [data-testid="stMetricLabel"] p {{
+#         font-size: 0.8rem !important;
+#         letter-spacing: 0.18em;
+#         text-transform: uppercase;
+#         color: {INK_SOFT} !important;
+#       }}
+#       [data-testid="stMetricValue"] {{
+#         font-family: "Times New Roman", Times, serif !important;
+#         color: {INK} !important;
+#         font-weight: 700;
+#       }}
+
+#       /* Tabs */
+#       .stTabs [data-baseweb="tab-list"] {{
+#         gap: 0;
+#         border-bottom: 1px solid {LINE};
+#       }}
+#       .stTabs [data-baseweb="tab"] {{
+#         font-family: "Times New Roman", Times, serif !important;
+#         font-size: 1.05rem;
+#         color: {INK_SOFT};
+#         background: transparent;
+#         border: 1px solid transparent;
+#         padding: 0.6rem 1.1rem;
+#       }}
+#       .stTabs [aria-selected="true"] {{
+#         color: {PAPER} !important;
+#         background: {INK} !important;
+#       }}
+#       .stTabs [data-baseweb="tab-highlight"] {{ background: {ACCENT}; }}
+
+#       /* Buttons */
+#       .stButton > button, .stDownloadButton > button {{
+#         font-family: "Times New Roman", Times, serif !important;
+#         font-size: 1rem;
+#         letter-spacing: 0.14em;
+#         text-transform: uppercase;
+#         background: {INK};
+#         color: {PAPER};
+#         border: 1px solid {INK};
+#         padding: 0.6rem 1.4rem;
+#         box-shadow: none;
+#       }}
+#       .stButton > button:hover, .stDownloadButton > button:hover {{
+#         background: {ACCENT};
+#         border-color: {ACCENT};
+#         color: {PAPER};
+#       }}
+
+#       /* Inputs / uploader */
+#       [data-testid="stFileUploaderDropzone"] {{
+#         background: #FFFFFF;
+#         border: 2px dashed {INK};
+#       }}
+#       .stSelectbox div[data-baseweb="select"] > div {{
+#         background: #FFFFFF;
+#         border: 1px solid {INK};
+#       }}
+#       [data-testid="stExpander"] details {{
+#         border: 1px solid {LINE};
+#         background: #FFFFFF;
+#       }}
+#       hr {{ border-top: 1px solid {LINE}; }}
+#       [data-testid="stDataFrame"] {{ border: 1px solid {LINE}; }}
+#       section[data-testid="stSidebar"] {{
+#         background: {INK};
+#         color: {PAPER};
+#         border-right: 1px solid {INK};
+#       }}
+#       section[data-testid="stSidebar"] * {{ color: {PAPER} !important; }}
+#     </style>
+#     """,
+#     unsafe_allow_html=True,
+# )
+
+
+
+
 def get_plotly_template() -> str:
     """Auto-detect Streamlit theme and return matching Plotly template."""
     try:
