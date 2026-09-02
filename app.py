@@ -9,7 +9,14 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-from dotenv import load_dotenv
+
+try:
+    from dotenv import load_dotenv
+except ModuleNotFoundError:
+    def load_dotenv(*args, **kwargs):
+        return False
+
+    st.warning("python-dotenv is not installed. Run: pip install -r requirements.txt")
 
 # ── ENV & PAGE CONFIG ─────────────────────────────────────────────
 load_dotenv()
@@ -204,10 +211,9 @@ if uploaded_file is not None:
     m4.metric("Duplicate Rows", f"{dupes:,}", "Clean" if dupes == 0 else "Review")
 
     # ── TABS ──────────────────────────────────────────────────────
-    tab_overview, tab_dist, tab_corr, tab_exec = st.tabs(
-        ["📝 Overview", "📈 Distributions", "🔥 Correlations", "🧠 Executive Summary"]
-    )
-
+    tab_overview, tab_dist, tab_corr, tab_bivar, tab_exec = st.tabs(
+    ["📝 Overview", "📈 Distributions", "🔥 Correlations", "🔍 Bivariate", "🧠 Executive Summary"]
+)
     # ── TAB 1: OVERVIEW ───────────────────────────────────────────
     with tab_overview:
         st.subheader("Data Preview")
@@ -276,6 +282,43 @@ if uploaded_file is not None:
             st.plotly_chart(fig_corr, use_container_width=True)
         else:
             st.info("Need at least 2 numeric columns to render a correlation heatmap.")
+
+        # ── TAB 3.5: BIVARIATE EXPLORER ─────────────────────────────
+    with tab_bivar:
+        numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+        categorical_cols = df.select_dtypes(include=["object", "category", "bool"]).columns.tolist()
+
+        if len(numeric_cols) >= 2:
+            c1, c2, c3 = st.columns(3)
+            with c1:
+                x_col = st.selectbox("X-axis", numeric_cols, index=0, key="biv_x")
+            with c2:
+                y_col = st.selectbox("Y-axis", numeric_cols, index=min(1, len(numeric_cols) - 1), key="biv_y")
+            with c3:
+                color_col = st.selectbox("Color by (optional)", ["None"] + categorical_cols, key="biv_color")
+
+            show_trend = st.toggle("Show trendline", value=True)
+
+            color_arg = None if color_col == "None" else color_col
+
+            fig_scatter = px.scatter(
+                df,
+                x=x_col,
+                y=y_col,
+                color=color_arg,
+                trendline="ols" if show_trend and color_arg is None else None,
+                title=f"{x_col} vs {y_col}",
+                template=PLOTLY_TEMPLATE,
+                opacity=0.6,
+                height=550
+            )
+            st.plotly_chart(fig_scatter, use_container_width=True)
+
+            if x_col != y_col:
+                corr_val = df[x_col].corr(df[y_col])
+                st.metric("Pearson Correlation", f"{corr_val:.3f}")
+        else:
+            st.info("Need at least 2 numeric columns for bivariate analysis.")
 
     # ── TAB 4: EXECUTIVE SUMMARY (LLM) ──────────────────────────
         # ── TAB 4: EXECUTIVE SUMMARY (LLM) ──────────────────────────
