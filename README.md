@@ -2,6 +2,10 @@
 
 AutoInsight is a single-file Streamlit app that turns any CSV into an interactive EDA dashboard with an AI-generated executive summary.
 
+## Live Demo
+
+[Click here to try AutoInsight live](https://auto-insight69.streamlit.app/) (Currently API call is off, you can explore other features.)
+
 ## Features
 
 - **CSV Upload** — Drag and drop any tabular dataset
@@ -43,9 +47,6 @@ AutoInsight is a single-file Streamlit app that turns any CSV into an interactiv
    streamlit run app.py
    ```
 
-## Live Demo
-
-[Click here to try AutoInsight live](https://auto-insight69.streamlit.app/) (Currently API call is off, you can explore other features.)
 
 ## Project Structure
 
