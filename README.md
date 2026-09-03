@@ -45,7 +45,7 @@ AutoInsight is a single-file Streamlit app that turns any CSV into an interactiv
 
 ## Live Demo
 
-[Click here to try AutoInsight live](https://auto-insight69.streamlit.app/)
+[Click here to try AutoInsight live](https://auto-insight69.streamlit.app/) (Currently API call if off, you can explore other features.)
 
 ## Project Structure
 
